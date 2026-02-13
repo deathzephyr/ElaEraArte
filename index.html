@@ -26,6 +26,11 @@
             box-sizing: border-box;
         }
 
+        html {
+            /* Importante: 'auto' permite que o JS controle o scroll perfeitamente */
+            scroll-behavior: auto; 
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -198,7 +203,6 @@
 
         /* Inverte a ordem (Direita para Esquerda) para seções pares */
         section:nth-child(even) .poem-grid { direction: rtl; }
-        /* Garante que o texto dentro da seção invertida continue legível (esquerda para direita) */
         section:nth-child(even) .poem-grid > * { direction: ltr; }
 
         .frame {
@@ -209,7 +213,7 @@
             background: var(--card-bg);
             transform: rotate(-2deg);
             transition: transform 0.6s ease, box-shadow 0.6s ease;
-            width: 100%; /* Garante que o frame não ultrapasse o grid */
+            width: 100%;
         }
 
         section:nth-child(even) .frame { transform: rotate(2deg); }
@@ -230,7 +234,7 @@
             font-size: 1.8rem;
             line-height: 1.5;
             color: #fff;
-            text-align: left; /* Garante alinhamento padrão */
+            text-align: left;
         }
 
         .highlight {
@@ -248,53 +252,45 @@
         
         footer {
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px; /* Mais espaço no footer para garantir que o scroll passe dele */
             color: #444;
             font-size: 0.9rem;
             border-top: 1px solid #222;
         }
 
-        /* ================= RESPONSIVIDADE MOBILE (CELULAR) ================= */
+        /* ================= RESPONSIVIDADE MOBILE ================= */
         @media (max-width: 768px) {
-            /* Mantém o layout em 2 colunas (lado a lado) conforme solicitado */
             .poem-grid {
-                grid-template-columns: 1fr 1fr; 
-                gap: 15px; /* Diminui o espaço entre texto e imagem */
-                padding: 0 10px; /* Um pouco de padding lateral de segurança */
+                grid-template-columns: 1fr 1fr; /* Mantém lado a lado */
+                gap: 15px;
+                padding: 0 10px;
             }
 
-            /* Ajuste da altura da seção para telas pequenas */
             section {
                 min-height: auto;
-                padding: 60px 0; /* Espaçamento vertical menor */
+                padding: 60px 0;
             }
 
-            /* Ajuste do tamanho da fonte para caber na metade da tela */
             .poem-content {
                 font-size: 1rem; 
                 line-height: 1.4;
             }
 
-            /* Ajuste específico para o título grande */
             .title-section .poem-content {
                 font-size: 2rem;
                 line-height: 1.2;
                 margin-bottom: 10px;
             }
 
-            /* Ajuste da moldura */
             .frame {
-                padding: 4px; /* Borda mais fina no mobile */
-                /* Remove a rotação no mobile para evitar que a imagem "saia" da tela estreita */
+                padding: 4px;
                 transform: rotate(0deg) !important; 
                 width: 100%;
             }
 
-            /* Ajuste da Intro */
             .intro-title { font-size: 2.5rem; }
             .intro-card { padding: 3rem 1.5rem; }
             
-            /* Garante que a imagem não fique maior que a coluna */
             .frame img {
                 max-width: 100%;
             }
@@ -416,38 +412,96 @@
     </footer>
 
     <script>
+        // Variáveis para controle do scroll
+        let isAutoScrolling = false;
+        let animationFrameId;
+
+        // Função que inicia o scroll automático
+        function startAutoScroll(audioElement) {
+            // Altura total que precisamos percorrer
+            // (Altura do documento - Altura da janela visível)
+            const totalScrollDistance = document.body.scrollHeight - window.innerHeight;
+            
+            // Duração da música em segundos
+            let duration = audioElement.duration;
+            
+            // Se a duração ainda não carregou (NaN), usamos um valor temporário
+            // e atualizaremos quando o áudio estiver pronto.
+            if (isNaN(duration)) {
+                duration = 180; // Padrão de 3 minutos se falhar a leitura inicial
+            }
+
+            function step() {
+                // Se a flag de auto-scroll foi desligada ou o áudio pausou, paramos
+                if (!isAutoScrolling || audioElement.paused) {
+                    return;
+                }
+
+                // Recalcula duração a cada frame caso tenha carregado agora
+                let currentDuration = audioElement.duration;
+                if (!isNaN(currentDuration)) {
+                    duration = currentDuration;
+                }
+
+                // Calcula quantos pixels rolar por frame
+                // Fórmula: (Distância Total / Tempo Total em Segundos) / 60 FPS
+                const pixelsPerFrame = (totalScrollDistance / duration) / 60;
+
+                window.scrollBy(0, pixelsPerFrame);
+
+                // Verifica se chegou ao final da página (com uma pequena margem de erro)
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
+                    isAutoScrolling = false; // Chegou ao fim
+                } else {
+                    // Continua o loop
+                    animationFrameId = requestAnimationFrame(step);
+                }
+            }
+
+            // Inicia o loop
+            isAutoScrolling = true;
+            step();
+        }
+
         function startExperience() {
             const audio = document.getElementById('bg-music');
             const overlay = document.getElementById('intro-overlay');
             
-            // Configura o volume antes de tocar
-            audio.volume = 0.6; // 60% do volume
+            // Configura o volume
+            audio.volume = 0.6; 
 
-            // Tenta tocar o áudio IMEDIATAMENTE
+            // Tenta tocar o áudio
             const playPromise = audio.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    // Reprodução iniciada com sucesso
-                    console.log("Áudio tocando (song.mpeg)");
+                    console.log("Áudio iniciando...");
+                    
+                    // Quando os metadados (duração) carregarem, iniciamos o scroll preciso
+                    if (audio.readyState >= 1) {
+                        startAutoScroll(audio);
+                    } else {
+                        audio.addEventListener('loadedmetadata', () => {
+                            startAutoScroll(audio);
+                        });
+                    }
                 })
                 .catch(error => {
-                    // Erro (geralmente arquivo não encontrado ou bloqueio do navegador)
-                    console.error("Erro ao reproduzir song.mpeg. Verifique se o arquivo está na pasta.", error);
-                    alert("Não foi possível encontrar o arquivo song.mpeg. Certifique-se de que ele está na mesma pasta que este site.");
+                    console.error("Erro ao reproduzir song.mpeg.", error);
+                    alert("Não foi possível encontrar o arquivo song.mpeg. Certifique-se de que ele está na mesma pasta.");
                 });
             }
 
-            // Remove a tela inicial suavemente
+            // Remove a tela inicial
             overlay.classList.add('hidden');
         }
 
-        // Lógica de Scroll (Intersection Observer)
+        // Lógica de Scroll (Intersection Observer) para animações de entrada
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.15 // Reduzi levemente o threshold para ativar um pouco antes no mobile
+                threshold: 0.15
             };
 
             const observer = new IntersectionObserver((entries, observer) => {
