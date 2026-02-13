@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ela Era Arte</title>
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================= ESTILOS GERAIS ================= */
+        :root {
+            --bg-color: #050202;
+            --accent-gold: #d4af37;
+            --accent-rose: #7a1a1a;
+            --text-color: #f0f0f0;
+            --card-bg: #120c0c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Playfair Display', serif;
+            overflow-x: hidden;
+        }
+
+        /* ================= TELA INICIAL MELHORADA (PRETTIER) ================= */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000; /* Fundo preto sólido por baixo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1.5s ease, visibility 1.5s ease;
+            overflow: hidden;
+        }
+
+        #intro-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* --- ANIMAÇÃO DE FUNDO (ORBES FLUTUANTES) --- */
+        .background-anim {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: floatOrb 10s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-rose);
+            top: -50px;
+            left: -50px;
+            animation-duration: 12s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-gold);
+            bottom: -100px;
+            right: -100px;
+            animation-duration: 15s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: #5c0a0a;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-duration: 18s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* --- CARTÃO DE VIDRO (GLASSMORPHISM) --- */
+        .intro-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(20, 10, 10, 0.6); /* Semitransparente */
+            backdrop-filter: blur(15px); /* Desfoque de vidro */
+            -webkit-backdrop-filter: blur(15px);
+            padding: 4rem 3rem;
+            border: 1px solid rgba(212, 175, 55, 0.3); /* Borda dourada fina */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 90%;
+            width: 500px;
+            border-radius: 4px;
+            opacity: 0;
+            animation: cardFadeIn 1.5s ease-out forwards 0.5s;
+        }
+
+        .intro-title {
+            color: var(--accent-gold);
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4); /* Brilho no texto */
+            line-height: 1.2;
+        }
+
+        .intro-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 0;
+        }
+
+        /* --- BOTÃO ESTILIZADO --- */
+        .play-btn {
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            border-radius: 50px; /* Bordas arredondadas */
+        }
+
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-gold);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .play-btn:hover::before {
+            left: 0;
+        }
+
+        .play-btn:hover {
+            color: #000;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ================= ESTRUTURA DO CONTEÚDO (POEMA) ================= */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        section {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.2s ease-out;
+            padding: 40px 0;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .poem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        section:nth-child(even) .poem-grid {
+            direction: rtl;
+        }
+        section:nth-child(even) .poem-grid > * {
+            direction: ltr;
+        }
+
+        .frame {
+            position: relative;
+            padding: 12px;
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            background: var(--card-bg);
+            transform: rotate(-2deg);
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        section:nth-child(even) .frame {
+            transform: rotate(2deg);
+        }
+
+        .frame:hover {
+            transform: rotate(0deg) scale(1.03);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+            z-index: 10;
+        }
+
+        .frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: sepia(20%) contrast(110%) brightness(0.9);
+        }
+
+        .poem-content {
+            font-size: 1.8rem;
+            line-height: 1.5;
+            color: #fff;
+        }
+
+        .highlight {
+            color: var(--accent-gold);
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .title-section .poem-content {
+            font-size: 3.5rem;
+            text-align: center;
+            color: var(--accent-gold);
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #444;
+            font-size: 0.9rem;
+            border-top: 1px solid #222;
+        }
+
+        @media (max-width: 768px) {
+            .poem-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+            section:nth-child(even) .poem-grid { direction: ltr; }
+            .poem-content { font-size: 1.4rem; }
+            .intro-title { font-size: 2.5rem; }
+            .intro-card { padding: 3rem 1.5rem; }
+            .frame { width: 90%; margin: 0 auto; transform: rotate(0deg) !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÁUDIO -->
+    <audio id="bg-music" loop>
+        <source src="poem_arte.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+    </audio>
+
+    <!-- NOVA TELA INICIAL -->
+    <div id="intro-overlay">
+        <!-- Fundo Animado -->
+        <div class="background-anim">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+
+        <!-- Cartão Central -->
+        <div class="intro-card">
+            <h1 class="intro-title">Debora Vezetiv</h1>
+            <p class="intro-subtitle">Uma declaração poética</p>
+            
+            <button class="play-btn" onclick="startExperience()">
+                ▶ Ouvir Poesia
+            </button>
+            <p style="color: #888; margin-top: 20px; font-size: 0.8rem; font-family: sans-serif;">Para a garota que tanto amo...</p>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <div class="container">
+
+        <!-- TÍTULO -->
+        <section class="title-section visible">
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Ela era arte
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/artintro/500/600" alt="Arte Abstrata">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 1 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Mais bonita que as pinturas de <span class="highlight">Van Gogh</span>,<br>
+                    que os olhos de <span class="highlight">Capitu</span><br>
+                    e as músicas de <span class="highlight">Chico Buarque</span>.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/vangoghclassic/500/600" alt="Pintura Clássica">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 2 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Nenhuma arte de <span class="highlight">Pablo Picasso</span><br>
+                    chegava aos pés dos seus traços.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/portraitsuave/500/600" alt="Retrato Artístico">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 3 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Ela era aquelas metáforas<br>
+                    com <span class="highlight">significado profundo</span>.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/starsnight/500/600" alt="Céu Estrelado">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 4 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Era aqueles <span class="highlight">livros</span> que quanto mais você lia,<br>
+                    mais você queria ir mais profundo.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/oldbooks/500/600" alt="Livros Antigos">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 5 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Podiam se passar dias,<br>
+                    ela sempre me <span class="highlight">surpreendia</span>.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/happysmile/500/600" alt="Sorriso">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 6 -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Não importa onde estava<br>
+                    e nem com quem estaria.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/pathway/500/600" alt="Caminho">
+                </div>
+            </div>
+        </section>
+
+        <!-- VERSO 7 (FINAL) -->
+        <section>
+            <div class="poem-grid">
+                <div class="poem-content">
+                    Todos podiam estar olhando pra mim,<br>
+                    mas era <span class="highlight">nela que eu me via</span>.
+                </div>
+                <div class="frame">
+                    <img src="https://picsum.photos/seed/reflection/500/600" alt="Reflexo">
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Feito para você.</p>
+    </footer>
+
+    <script>
+        function startExperience() {
+            const audio = document.getElementById('bg-music');
+            const overlay = document.getElementById('intro-overlay');
+            
+            // Tenta tocar o áudio
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("Erro no autoplay ou arquivo não encontrado:", e));
+
+            // Esconde a tela inicial
+            overlay.classList.add('hidden');
+        }
+
+        // Animação de Scroll
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.25
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
