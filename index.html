@@ -27,7 +27,6 @@
         }
 
         html {
-            /* Importante: 'auto' permite que o JS controle o scroll perfeitamente */
             scroll-behavior: auto; 
         }
 
@@ -61,7 +60,6 @@
             pointer-events: none;
         }
 
-        /* Fundo Animado */
         .background-anim {
             position: absolute;
             top: 0;
@@ -89,7 +87,6 @@
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
-        /* Cartão de Vidro */
         .intro-card {
             position: relative;
             z-index: 2;
@@ -128,7 +125,6 @@
             padding: 10px 0;
         }
 
-        /* Botão */
         .play-btn {
             background: transparent;
             border: 1px solid var(--accent-gold);
@@ -179,7 +175,7 @@
         }
 
         section {
-            min-height: 90vh;
+            min-height: 90vh; /* Define a altura padrão para desktop */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -201,7 +197,6 @@
             align-items: center;
         }
 
-        /* Inverte a ordem (Direita para Esquerda) para seções pares */
         section:nth-child(even) .poem-grid { direction: rtl; }
         section:nth-child(even) .poem-grid > * { direction: ltr; }
 
@@ -252,38 +247,44 @@
         
         footer {
             text-align: center;
-            padding: 60px 40px; /* Mais espaço no footer para garantir que o scroll passe dele */
+            padding: 60px 40px;
             color: #444;
             font-size: 0.9rem;
             border-top: 1px solid #222;
+            /* O footer precisa de altura para o scroll passar dele */
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* ================= RESPONSIVIDADE MOBILE ================= */
         @media (max-width: 768px) {
+            /* Força a seção a ocupar a tela inteira (como no PC) */
+            section {
+                min-height: 100vh; 
+                padding: 20px 0; /* Reduzi o padding para aproximar o conteúdo das bordas */
+            }
+
             .poem-grid {
                 grid-template-columns: 1fr 1fr; /* Mantém lado a lado */
-                gap: 15px;
+                gap: 10px; /* Reduzi o espaço entre texto e imagem */
                 padding: 0 10px;
             }
 
-            section {
-                min-height: auto;
-                padding: 60px 0;
-            }
-
             .poem-content {
-                font-size: 1rem; 
-                line-height: 1.4;
+                font-size: 0.95rem; /* Fonte menor para caber melhor na tela cheia */
+                line-height: 1.3;
             }
 
             .title-section .poem-content {
                 font-size: 2rem;
-                line-height: 1.2;
-                margin-bottom: 10px;
+                line-height: 1.1;
+                margin-bottom: 0;
             }
 
             .frame {
-                padding: 4px;
+                padding: 3px; /* Borda bem fina */
                 transform: rotate(0deg) !important; 
                 width: 100%;
             }
@@ -416,49 +417,35 @@
         let isAutoScrolling = false;
         let animationFrameId;
 
-        // Função que inicia o scroll automático
         function startAutoScroll(audioElement) {
-            // Altura total que precisamos percorrer
-            // (Altura do documento - Altura da janela visível)
             const totalScrollDistance = document.body.scrollHeight - window.innerHeight;
-            
-            // Duração da música em segundos
             let duration = audioElement.duration;
             
-            // Se a duração ainda não carregou (NaN), usamos um valor temporário
-            // e atualizaremos quando o áudio estiver pronto.
             if (isNaN(duration)) {
-                duration = 180; // Padrão de 3 minutos se falhar a leitura inicial
+                duration = 180; 
             }
 
             function step() {
-                // Se a flag de auto-scroll foi desligada ou o áudio pausou, paramos
                 if (!isAutoScrolling || audioElement.paused) {
                     return;
                 }
 
-                // Recalcula duração a cada frame caso tenha carregado agora
                 let currentDuration = audioElement.duration;
                 if (!isNaN(currentDuration)) {
                     duration = currentDuration;
                 }
 
-                // Calcula quantos pixels rolar por frame
-                // Fórmula: (Distância Total / Tempo Total em Segundos) / 60 FPS
                 const pixelsPerFrame = (totalScrollDistance / duration) / 60;
 
                 window.scrollBy(0, pixelsPerFrame);
 
-                // Verifica se chegou ao final da página (com uma pequena margem de erro)
                 if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
-                    isAutoScrolling = false; // Chegou ao fim
+                    isAutoScrolling = false;
                 } else {
-                    // Continua o loop
                     animationFrameId = requestAnimationFrame(step);
                 }
             }
 
-            // Inicia o loop
             isAutoScrolling = true;
             step();
         }
@@ -467,17 +454,12 @@
             const audio = document.getElementById('bg-music');
             const overlay = document.getElementById('intro-overlay');
             
-            // Configura o volume
             audio.volume = 0.6; 
 
-            // Tenta tocar o áudio
             const playPromise = audio.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    console.log("Áudio iniciando...");
-                    
-                    // Quando os metadados (duração) carregarem, iniciamos o scroll preciso
                     if (audio.readyState >= 1) {
                         startAutoScroll(audio);
                     } else {
@@ -488,15 +470,13 @@
                 })
                 .catch(error => {
                     console.error("Erro ao reproduzir song.mpeg.", error);
-                    alert("Não foi possível encontrar o arquivo song.mpeg. Certifique-se de que ele está na mesma pasta.");
+                    alert("Não foi possível encontrar o arquivo song.mpeg.");
                 });
             }
 
-            // Remove a tela inicial
             overlay.classList.add('hidden');
         }
 
-        // Lógica de Scroll (Intersection Observer) para animações de entrada
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = {
                 root: null,
