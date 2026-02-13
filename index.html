@@ -33,7 +33,7 @@
             overflow-x: hidden;
         }
 
-        /* ================= TELA INICIAL (PRETTIER) ================= */
+        /* ================= TELA INICIAL ================= */
         #intro-overlay {
             position: fixed;
             top: 0;
@@ -196,7 +196,9 @@
             align-items: center;
         }
 
+        /* Inverte a ordem (Direita para Esquerda) para seções pares */
         section:nth-child(even) .poem-grid { direction: rtl; }
+        /* Garante que o texto dentro da seção invertida continue legível (esquerda para direita) */
         section:nth-child(even) .poem-grid > * { direction: ltr; }
 
         .frame {
@@ -207,6 +209,7 @@
             background: var(--card-bg);
             transform: rotate(-2deg);
             transition: transform 0.6s ease, box-shadow 0.6s ease;
+            width: 100%; /* Garante que o frame não ultrapasse o grid */
         }
 
         section:nth-child(even) .frame { transform: rotate(2deg); }
@@ -227,6 +230,7 @@
             font-size: 1.8rem;
             line-height: 1.5;
             color: #fff;
+            text-align: left; /* Garante alinhamento padrão */
         }
 
         .highlight {
@@ -250,20 +254,56 @@
             border-top: 1px solid #222;
         }
 
+        /* ================= RESPONSIVIDADE MOBILE (CELULAR) ================= */
         @media (max-width: 768px) {
-            .poem-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-            section:nth-child(even) .poem-grid { direction: ltr; }
-            .poem-content { font-size: 1.4rem; }
+            /* Mantém o layout em 2 colunas (lado a lado) conforme solicitado */
+            .poem-grid {
+                grid-template-columns: 1fr 1fr; 
+                gap: 15px; /* Diminui o espaço entre texto e imagem */
+                padding: 0 10px; /* Um pouco de padding lateral de segurança */
+            }
+
+            /* Ajuste da altura da seção para telas pequenas */
+            section {
+                min-height: auto;
+                padding: 60px 0; /* Espaçamento vertical menor */
+            }
+
+            /* Ajuste do tamanho da fonte para caber na metade da tela */
+            .poem-content {
+                font-size: 1rem; 
+                line-height: 1.4;
+            }
+
+            /* Ajuste específico para o título grande */
+            .title-section .poem-content {
+                font-size: 2rem;
+                line-height: 1.2;
+                margin-bottom: 10px;
+            }
+
+            /* Ajuste da moldura */
+            .frame {
+                padding: 4px; /* Borda mais fina no mobile */
+                /* Remove a rotação no mobile para evitar que a imagem "saia" da tela estreita */
+                transform: rotate(0deg) !important; 
+                width: 100%;
+            }
+
+            /* Ajuste da Intro */
             .intro-title { font-size: 2.5rem; }
             .intro-card { padding: 3rem 1.5rem; }
-            .frame { width: 90%; margin: 0 auto; transform: rotate(0deg) !important; }
+            
+            /* Garante que a imagem não fique maior que a coluna */
+            .frame img {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ÁUDIO: ARQUIVO ATUALIZADO PARA song.mpeg -->
-    <!-- Loop ativado para repetir se necessário -->
+    <!-- ÁUDIO -->
     <audio id="bg-music" loop>
         <source src="song.mpeg" type="audio/mpeg">
         Seu navegador não suporta áudio.
@@ -281,7 +321,6 @@
             <h1 class="intro-title">Debora Vezetiv</h1>
             <p class="intro-subtitle">Uma declaração poética</p>
             
-            <!-- Botão que chama a função JS -->
             <button class="play-btn" onclick="startExperience()">
                 ▶ Ouvir Poesia
             </button>
@@ -403,12 +442,12 @@
             overlay.classList.add('hidden');
         }
 
-        // Lógica de Scroll
+        // Lógica de Scroll (Intersection Observer)
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.25
+                threshold: 0.15 // Reduzi levemente o threshold para ativar um pouco antes no mobile
             };
 
             const observer = new IntersectionObserver((entries, observer) => {
