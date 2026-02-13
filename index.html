@@ -27,7 +27,6 @@
         }
 
         html {
-            /* Importante: 'auto' permite que o JS controle o scroll perfeitamente */
             scroll-behavior: auto; 
         }
 
@@ -128,8 +127,8 @@
             padding: 10px 0;
         }
 
-        /* Botão */
-        .play-btn {
+        /* Estilo Base dos Botões */
+        .action-btn {
             background: transparent;
             border: 1px solid var(--accent-gold);
             color: var(--accent-gold);
@@ -143,9 +142,10 @@
             position: relative;
             overflow: hidden;
             border-radius: 50px;
+            margin-top: 10px;
         }
 
-        .play-btn::before {
+        .action-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -157,8 +157,8 @@
             z-index: -1;
         }
 
-        .play-btn:hover::before { left: 0; }
-        .play-btn:hover {
+        .action-btn:hover::before { left: 0; }
+        .action-btn:hover {
             color: #000;
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
             transform: translateY(-2px);
@@ -252,16 +252,22 @@
         
         footer {
             text-align: center;
-            padding: 60px 40px; /* Mais espaço no footer para garantir que o scroll passe dele */
-            color: #444;
-            font-size: 0.9rem;
+            padding: 80px 20px;
+            color: #888;
+            font-size: 1rem;
             border-top: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            min-height: 40vh; /* Garante espaço no final */
+            justify-content: center;
         }
 
         /* ================= RESPONSIVIDADE MOBILE ================= */
         @media (max-width: 768px) {
             .poem-grid {
-                grid-template-columns: 1fr 1fr; /* Mantém lado a lado */
+                grid-template-columns: 1fr 1fr; 
                 gap: 15px;
                 padding: 0 10px;
             }
@@ -299,8 +305,8 @@
 </head>
 <body>
 
-    <!-- ÁUDIO -->
-    <audio id="bg-music" loop>
+    <!-- ÁUDIO: Removido o atributo 'loop' para parar após tocar uma vez -->
+    <audio id="bg-music">
         <source src="song.mpeg" type="audio/mpeg">
         Seu navegador não suporta áudio.
     </audio>
@@ -317,7 +323,7 @@
             <h1 class="intro-title">Debora Vezetiv</h1>
             <p class="intro-subtitle">Uma declaração poética</p>
             
-            <button class="play-btn" onclick="startExperience()">
+            <button class="action-btn" onclick="startExperience()">
                 ▶ Ouvir Poesia
             </button>
             <p style="color: #888; margin-top: 20px; font-size: 0.8rem; font-family: sans-serif;">Para a garota que tanto amo...</p>
@@ -407,8 +413,12 @@
 
     </div>
 
+    <!-- FOOTER COM OPÇÃO DE RECOMEÇAR -->
     <footer>
         <p>Eu te amo Debora Vezetiv.</p>
+        <button class="action-btn" onclick="restartExperience()">
+            ↻ Recomeçar
+        </button>
     </footer>
 
     <script>
@@ -419,14 +429,12 @@
         // Função que inicia o scroll automático
         function startAutoScroll(audioElement) {
             // Altura total que precisamos percorrer
-            // (Altura do documento - Altura da janela visível)
             const totalScrollDistance = document.body.scrollHeight - window.innerHeight;
             
             // Duração da música em segundos
             let duration = audioElement.duration;
             
             // Se a duração ainda não carregou (NaN), usamos um valor temporário
-            // e atualizaremos quando o áudio estiver pronto.
             if (isNaN(duration)) {
                 duration = 180; // Padrão de 3 minutos se falhar a leitura inicial
             }
@@ -449,8 +457,8 @@
 
                 window.scrollBy(0, pixelsPerFrame);
 
-                // Verifica se chegou ao final da página (com uma pequena margem de erro)
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
+                // Verifica se chegou ao final da página
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
                     isAutoScrolling = false; // Chegou ao fim
                 } else {
                     // Continua o loop
@@ -463,6 +471,7 @@
             step();
         }
 
+        // Função Inicial
         function startExperience() {
             const audio = document.getElementById('bg-music');
             const overlay = document.getElementById('intro-overlay');
@@ -475,8 +484,6 @@
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    console.log("Áudio iniciando...");
-                    
                     // Quando os metadados (duração) carregarem, iniciamos o scroll preciso
                     if (audio.readyState >= 1) {
                         startAutoScroll(audio);
@@ -494,6 +501,42 @@
 
             // Remove a tela inicial
             overlay.classList.add('hidden');
+        }
+
+        // Função Recomeçar (Nova)
+        function restartExperience() {
+            const audio = document.getElementById('bg-music');
+            const overlay = document.getElementById('intro-overlay');
+
+            // 1. Para o scroll atual
+            isAutoScrolling = false;
+            cancelAnimationFrame(animationFrameId);
+
+            // 2. Reseta o áudio
+            audio.pause();
+            audio.currentTime = 0;
+
+            // 3. Remove a classe 'visible' de todas as seções para reanimá-las
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                section.classList.remove('visible');
+            });
+
+            // 4. Garante que a tela inicial fique escondida
+            overlay.classList.add('hidden');
+
+            // 5. Volta para o topo instantaneamente
+            window.scrollTo(0, 0);
+
+            // 6. Inicia tudo novamente após um pequeno delay
+            setTimeout(() => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        startAutoScroll(audio);
+                    }).catch(error => console.log("Erro ao reiniciar:", error));
+                }
+            }, 500);
         }
 
         // Lógica de Scroll (Intersection Observer) para animações de entrada
