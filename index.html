@@ -33,14 +33,14 @@
             overflow-x: hidden;
         }
 
-        /* ================= TELA INICIAL MELHORADA (PRETTIER) ================= */
+        /* ================= TELA INICIAL (PRETTIER) ================= */
         #intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: #000; /* Fundo preto sólido por baixo */
+            background: #000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -56,7 +56,7 @@
             pointer-events: none;
         }
 
-        /* --- ANIMAÇÃO DE FUNDO (ORBES FLUTUANTES) --- */
+        /* Fundo Animado */
         .background-anim {
             position: absolute;
             top: 0;
@@ -75,48 +75,24 @@
             animation: floatOrb 10s infinite ease-in-out alternate;
         }
 
-        .orb-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--accent-rose);
-            top: -50px;
-            left: -50px;
-            animation-duration: 12s;
-        }
-
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: var(--accent-gold);
-            bottom: -100px;
-            right: -100px;
-            animation-duration: 15s;
-        }
-
-        .orb-3 {
-            width: 200px;
-            height: 200px;
-            background: #5c0a0a;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-duration: 18s;
-        }
+        .orb-1 { width: 300px; height: 300px; background: var(--accent-rose); top: -50px; left: -50px; animation-duration: 12s; }
+        .orb-2 { width: 400px; height: 400px; background: var(--accent-gold); bottom: -100px; right: -100px; animation-duration: 15s; }
+        .orb-3 { width: 200px; height: 200px; background: #5c0a0a; top: 40%; left: 50%; transform: translate(-50%, -50%); animation-duration: 18s; }
 
         @keyframes floatOrb {
             0% { transform: translate(0, 0) scale(1); }
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
-        /* --- CARTÃO DE VIDRO (GLASSMORPHISM) --- */
+        /* Cartão de Vidro */
         .intro-card {
             position: relative;
             z-index: 2;
-            background: rgba(20, 10, 10, 0.6); /* Semitransparente */
-            backdrop-filter: blur(15px); /* Desfoque de vidro */
+            background: rgba(20, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             padding: 4rem 3rem;
-            border: 1px solid rgba(212, 175, 55, 0.3); /* Borda dourada fina */
+            border: 1px solid rgba(212, 175, 55, 0.3);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             text-align: center;
             max-width: 90%;
@@ -131,7 +107,7 @@
             font-family: 'Dancing Script', cursive;
             font-size: 3.5rem;
             margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4); /* Brilho no texto */
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
             line-height: 1.2;
         }
 
@@ -147,7 +123,7 @@
             padding: 10px 0;
         }
 
-        /* --- BOTÃO ESTILIZADO --- */
+        /* Botão */
         .play-btn {
             background: transparent;
             border: 1px solid var(--accent-gold);
@@ -161,7 +137,7 @@
             text-transform: uppercase;
             position: relative;
             overflow: hidden;
-            border-radius: 50px; /* Bordas arredondadas */
+            border-radius: 50px;
         }
 
         .play-btn::before {
@@ -176,10 +152,7 @@
             z-index: -1;
         }
 
-        .play-btn:hover::before {
-            left: 0;
-        }
-
+        .play-btn:hover::before { left: 0; }
         .play-btn:hover {
             color: #000;
             box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
@@ -191,7 +164,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ================= ESTRUTURA DO CONTEÚDO (POEMA) ================= */
+        /* ================= CONTEÚDO DO POEMA ================= */
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -223,12 +196,8 @@
             align-items: center;
         }
 
-        section:nth-child(even) .poem-grid {
-            direction: rtl;
-        }
-        section:nth-child(even) .poem-grid > * {
-            direction: ltr;
-        }
+        section:nth-child(even) .poem-grid { direction: rtl; }
+        section:nth-child(even) .poem-grid > * { direction: ltr; }
 
         .frame {
             position: relative;
@@ -240,10 +209,7 @@
             transition: transform 0.6s ease, box-shadow 0.6s ease;
         }
 
-        section:nth-child(even) .frame {
-            transform: rotate(2deg);
-        }
-
+        section:nth-child(even) .frame { transform: rotate(2deg); }
         .frame:hover {
             transform: rotate(0deg) scale(1.03);
             box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
@@ -296,26 +262,26 @@
 </head>
 <body>
 
-    <!-- ÁUDIO -->
+    <!-- ÁUDIO: ARQUIVO ATUALIZADO PARA song.mpeg -->
+    <!-- Loop ativado para repetir se necessário -->
     <audio id="bg-music" loop>
-        <source src="poem_arte.mp3" type="audio/mpeg">
+        <source src="song.mpeg" type="audio/mpeg">
         Seu navegador não suporta áudio.
     </audio>
 
-    <!-- NOVA TELA INICIAL -->
+    <!-- TELA INICIAL -->
     <div id="intro-overlay">
-        <!-- Fundo Animado -->
         <div class="background-anim">
             <div class="orb orb-1"></div>
             <div class="orb orb-2"></div>
             <div class="orb orb-3"></div>
         </div>
 
-        <!-- Cartão Central -->
         <div class="intro-card">
             <h1 class="intro-title">Debora Vezetiv</h1>
             <p class="intro-subtitle">Uma declaração poética</p>
             
+            <!-- Botão que chama a função JS -->
             <button class="play-btn" onclick="startExperience()">
                 ▶ Ouvir Poesia
             </button>
@@ -326,19 +292,13 @@
     <!-- CONTEÚDO -->
     <div class="container">
 
-        <!-- TÍTULO -->
         <section class="title-section visible">
             <div class="poem-grid">
-                <div class="poem-content">
-                    Ela era arte
-                </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/artintro/500/600" alt="Arte Abstrata">
-                </div>
+                <div class="poem-content">Ela era arte</div>
+                <div class="frame"><img src="https://picsum.photos/seed/artintro/500/600" alt="Arte"></div>
             </div>
         </section>
 
-        <!-- VERSO 1 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
@@ -346,87 +306,67 @@
                     que os olhos de <span class="highlight">Capitu</span><br>
                     e as músicas de <span class="highlight">Chico Buarque</span>.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/vangoghclassic/500/600" alt="Pintura Clássica">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/vangoghclassic/500/600" alt="Clássico"></div>
             </div>
         </section>
 
-        <!-- VERSO 2 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Nenhuma arte de <span class="highlight">Pablo Picasso</span><br>
                     chegava aos pés dos seus traços.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/portraitsuave/500/600" alt="Retrato Artístico">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/portraitsuave/500/600" alt="Retrato"></div>
             </div>
         </section>
 
-        <!-- VERSO 3 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Ela era aquelas metáforas<br>
                     com <span class="highlight">significado profundo</span>.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/starsnight/500/600" alt="Céu Estrelado">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/starsnight/500/600" alt="Estrelas"></div>
             </div>
         </section>
 
-        <!-- VERSO 4 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Era aqueles <span class="highlight">livros</span> que quanto mais você lia,<br>
                     mais você queria ir mais profundo.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/oldbooks/500/600" alt="Livros Antigos">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/oldbooks/500/600" alt="Livros"></div>
             </div>
         </section>
 
-        <!-- VERSO 5 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Podiam se passar dias,<br>
                     ela sempre me <span class="highlight">surpreendia</span>.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/happysmile/500/600" alt="Sorriso">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/happysmile/500/600" alt="Sorriso"></div>
             </div>
         </section>
 
-        <!-- VERSO 6 -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Não importa onde estava<br>
                     e nem com quem estaria.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/pathway/500/600" alt="Caminho">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/pathway/500/600" alt="Caminho"></div>
             </div>
         </section>
 
-        <!-- VERSO 7 (FINAL) -->
         <section>
             <div class="poem-grid">
                 <div class="poem-content">
                     Todos podiam estar olhando pra mim,<br>
                     mas era <span class="highlight">nela que eu me via</span>.
                 </div>
-                <div class="frame">
-                    <img src="https://picsum.photos/seed/reflection/500/600" alt="Reflexo">
-                </div>
+                <div class="frame"><img src="https://picsum.photos/seed/reflection/500/600" alt="Reflexo"></div>
             </div>
         </section>
 
@@ -441,15 +381,29 @@
             const audio = document.getElementById('bg-music');
             const overlay = document.getElementById('intro-overlay');
             
-            // Tenta tocar o áudio
-            audio.volume = 0.6;
-            audio.play().catch(e => console.log("Erro no autoplay ou arquivo não encontrado:", e));
+            // Configura o volume antes de tocar
+            audio.volume = 0.6; // 60% do volume
 
-            // Esconde a tela inicial
+            // Tenta tocar o áudio IMEDIATAMENTE
+            const playPromise = audio.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Reprodução iniciada com sucesso
+                    console.log("Áudio tocando (song.mpeg)");
+                })
+                .catch(error => {
+                    // Erro (geralmente arquivo não encontrado ou bloqueio do navegador)
+                    console.error("Erro ao reproduzir song.mpeg. Verifique se o arquivo está na pasta.", error);
+                    alert("Não foi possível encontrar o arquivo song.mpeg. Certifique-se de que ele está na mesma pasta que este site.");
+                });
+            }
+
+            // Remove a tela inicial suavemente
             overlay.classList.add('hidden');
         }
 
-        // Animação de Scroll
+        // Lógica de Scroll
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = {
                 root: null,
